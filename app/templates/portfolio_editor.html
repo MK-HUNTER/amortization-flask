@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Master Portfolio Editor - Global Ledger{% endblock %}
+
+{% block content %}
+<form id="portfolio-form" action="{{ url_for('main.save_portfolio_changes') }}" method="POST" class="flex flex-col flex-1 overflow-hidden">
+    
+    <header class="bg-white border-b border-[#e2e8f0] px-8 py-4 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center space-x-2 text-xs text-gray-500 font-medium">
+            <span>PORTFOLIO</span>
+            <span>/</span>
+            <span class="text-gray-900 font-semibold">GLOBAL OVERVIEW</span>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button type="button" onclick="window.location.reload();" class="px-4 py-2 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg bg-white hover:bg-gray-50 transition-colors shadow-sm">Discard Changes</button>
+            
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm">Save Changes</button>
+            
+            <button type="button" onclick="window.location.reload();" class="px-3 py-2 border border-gray-200 text-gray-600 text-xs font-medium rounded-lg bg-white hover:bg-gray-50 flex items-center space-x-1.5 shadow-sm">
+                <span>🔄</span> <span>Sync</span>
+            </button>
+            <button type="button" class="p-2 border border-gray-200 text-gray-400 hover:text-gray-600 rounded-lg bg-white shadow-sm text-xs">🔔</button>
+        </div>
+    </header>
+
+    <section class="flex-1 overflow-y-auto p-8 space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 heading-token">Master Portfolio Editor</h2>
+            </div>
+            <button type="button" onclick="toggleModal(true)" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm flex items-center space-x-1.5">
+                <span>➕</span> <span>Add New Loan</span>
+            </button>
+        </div>
+
+        <div class="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden flex flex-col shadow-sm">
+            <table class="w-full text-left border-collapse saas-table">
+                <thead>
+                    <tr class="text-xs font-semibold text-gray-700 uppercase border-b border-[#e2e8f0]">
+                        <th class="p-4 text-blue-600">Loan ID</th>
+                        <th class="p-4">Loan Name</th>
+                        <th class="p-4 text-right">Principal ($)</th>
+                        <th class="p-4 text-right">Rate (%)</th>
+                        <th class="p-4 text-center">Term (Yrs)</th>
+                        <th class="p-4 text-center">Balloon Period (Yrs)</th>
+                        <th class="p-4">Start Date</th>
+                        <th class="p-4 text-right text-gray-500">Accrued</th>
+                        <th class="p-4 text-right">Paid</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-sm text-gray-600 font-medium">
+                    {% if not portfolio_loans %}
+                    <tr>
+                        <td colspan="9" class="p-8 text-center text-sm text-gray-400 italic bg-white">
+                            No ledger asset paths mapped inside core repository database.
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% for item in portfolio_loans %}
+                    <tr class="hover:bg-blue-50/40 transition-colors {% if loop.index % 2 == 0 %}bg-[#f8fafc]{% endif %}">
+                        <input type="hidden" name="loan_id[]" value="{{ item.loan_id }}">
+                        
+                        <td class="p-4 font-mono text-xs font-bold text-blue-600">
+                            <a href="{{ url_for('main.loan_detail_view', loan_id=item.loan_id) }}" class="hover:underline">#{{ item.loan_id }}</a>
+                        </td>
+                        
+                        <td class="p-4 text-gray-900 font-semibold max-w-[200px] truncate">
+                            {{ item.loan_name }}
+                        </td>
+                        
+                        <td class="p-2 text-right">
+                            <input type="number" step="0.01" name="principal[]" value="{{ item.principal }}" class="w-full text-sm text-right font-medium text-gray-800 bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded tabular-data-flag focus:outline-none">
+                        </td>
+                        
+                        <td class="p-2 text-right">
+                            <input type="number" step="0.01" name="rate[]" value="{{ item.rate }}" class="w-full text-sm text-right font-medium text-gray-800 bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded tabular-data-flag focus:outline-none">
+                        </td>
+                        
+                        <td class="p-2 text-center">
+                            <input type="number" name="term_years[]" value="{{ item.term_years }}" class="w-16 text-sm text-center font-mono bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded focus:outline-none mx-auto">
+                        </td>
+                        
+                        <td class="p-2 text-center">
+                            <input type="number" name="balloon_years[]" value="{{ item.balloon_years or 0 }}" class="w-16 text-sm text-center font-mono bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded focus:outline-none mx-auto">
+                        </td>
+
+                        <td class="p-2">
+                            <input type="date" name="start_date[]" value="{{ item.start_date }}" class="text-xs font-mono text-gray-600 bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded focus:outline-none w-full">
+                        </td>
+                        
+                        <td class="p-4 text-right tabular-data-flag text-gray-500 font-normal">
+                            ${{ '{:,.2f}'.format(item.accrued) }}
+                        </td>
+                        <td class="p-4 text-right tabular-data-flag font-bold text-gray-900">
+                            ${{ '{:,.2f}'.format(item.paid) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <footer class="bg-[#f8fafc] border-t border-[#e2e8f0] px-4 py-3 flex items-center justify-between text-xs text-gray-500 font-medium">
+                <div>VIEWING {{ portfolio_loans|length }} Active Financial Asset Mappings</div>
+            </footer>
+        </div>
+    </section>
+</form>
+{% endblock %}

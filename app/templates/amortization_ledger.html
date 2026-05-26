@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Amortization Schedule Ledger Engine{% endblock %}
+
+{% block content %}
+<div class="flex flex-col flex-1 overflow-hidden">
+    {% if selected_loan %}
+        <header class="bg-white border-b border-[#e2e8f0] p-6 grid grid-cols-4 gap-6 flex-shrink-0">
+            <div>
+                <span class="text-xs font-medium text-gray-400 uppercase">Selected Structural Track</span>
+                <h2 class="text-2xl font-bold text-gray-900 heading-token mt-1">{{ selected_loan.loan_name }}</h2>
+                <p class="text-xs font-mono text-gray-500 mt-0.5">ID Hash Reference: {{ selected_loan.loan_id }}</p>
+            </div>
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <span class="text-xs font-medium text-gray-500 block">Total Lifecycle Return Asset Value</span>
+                <span class="text-xl font-bold text-gray-900 tabular-data-flag mt-1 block">${{ '{:,.2f}'.format(selected_loan.total_paid) }}</span>
+                <span class="text-[11px] text-gray-400 block mt-0.5">Principal: ${{ '{:,.2f}'.format(selected_loan.principal) }}</span>
+            </div>
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <span class="text-xs font-medium text-gray-500 block">Calculated Cumulative Margin Cost</span>
+                <span class="text-xl font-bold text-[#1e40af] tabular-data-flag mt-1 block">${{ '{:,.2f}'.format(selected_loan.total_interest) }}</span>
+                <span class="text-[11px] text-gray-400 block mt-0.5">Lifecycle Interest Factor Overview</span>
+            </div>
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <span class="text-xs font-medium text-gray-500 block">Term Horizon Limitations</span>
+                <span class="text-xl font-bold text-gray-900 mt-1 block">{{ selected_loan.term_years }} Commercial Years</span>
+                <span class="text-[11px] text-gray-500 block mt-0.5">
+                    {% if selected_loan.balloon_years > 0 %}
+                        Balloon Lock Call: Year {{ selected_loan.balloon_years }}
+                    {% else %}
+                        Amortization: Fully Liquidated Maturity
+                    {% endif %}
+                </span>
+            </div>
+        </header>
+
+        <section class="flex-1 overflow-auto p-6">
+            <div class="bg-white rounded border border-[#e2e8f0] overflow-hidden flex flex-col h-full shadow-sm">
+                <div class="overflow-y-auto flex-1">
+                    <table class="w-full text-left border-collapse saas-table">
+                        <thead class="sticky-header">
+                            <tr class="text-xs font-semibold text-gray-700 uppercase border-b border-[#e2e8f0]">
+                                <th class="p-3 text-center">Index</th>
+                                <th class="p-3">Payment Processing Date</th>
+                                <th class="p-3 text-right">Opening Pool Base</th>
+                                <th class="p-3 text-right">Payment installment (EMI)</th>
+                                <th class="p-3 text-right">Principal Applied Component</th>
+                                <th class="p-3 text-right">Interest Allocation Portion</th>
+                                <th class="p-3 text-right">Closing Residual Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm text-gray-600">
+                            {% for row in schedule %}
+                                <tr class="transition-colors {% if loop.index % 2 == 0 %}bg-[#f8fafc]{% endif %}">
+                                    <td class="p-3 font-mono text-center text-xs text-gray-400">{{ row.month_index }}</td>
+                                    <td class="p-3 font-medium text-gray-900">{{ row.date }}</td>
+                                    <td class="p-3 text-right tabular-data-flag">${{ '{:,.2f}'.format(row.opening_bal) }}</td>
+                                    <td class="p-3 text-right tabular-data-flag font-semibold text-gray-900">${{ '{:,.2f}'.format(row.payment) }}</td>
+                                    <td class="p-3 text-right tabular-data-flag text-emerald-600">${{ '{:,.2f}'.format(row.principal_paid) }}</td>
+                                    <td class="p-3 text-right tabular-data-flag text-amber-600">${{ '{:,.2f}'.format(row.interest_paid) }}</td>
+                                    <td class="p-3 text-right tabular-data-flag font-medium text-gray-900 bg-gray-50/50">${{ '{:,.2f}'.format(row.closing_bal) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    {% else %}
+        <section class="flex-1 flex flex-col items-center justify-center p-12 text-center">
+            <div class="w-16 h-16 bg-[#f1f5f9] rounded-full flex items-center justify-center mb-4 border border-[#e2e8f0]">
+                <span class="text-2xl">📊</span>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 heading-token">No Active Operational Loan Profile Loaded</h3>
+            <p class="text-sm text-gray-500 max-w-sm mt-1">Select an active loan instance from the sidebar or instantiate a new configuration.</p>
+            <button onclick="toggleModal(true)" class="mt-4 inline-flex items-center space-x-2 text-sm font-semibold bg-[#1e40af] text-white px-4 py-2 rounded shadow hover:bg-[#1e3a8a]">
+                <span>➕ Initialize New Calculation Structure</span>
+            </button>
+        </section>
+    {% endif %}
+</div>
+{% endblock %}
