@@ -5,6 +5,178 @@
 {% block content %}
 
 <style>
+
+    body {
+        background: #f3f5f8;
+    }
+
+    .premium-card {
+        background: #ffffff;
+        border: 1px solid #dbe1e8;
+        border-radius: 22px;
+        box-shadow:
+            0 1px 2px rgba(15, 23, 42, 0.03),
+            0 10px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .metric-card {
+        background: #ffffff;
+        border: 1px solid #e3e8ef;
+        border-radius: 18px;
+        padding: 22px;
+        min-height: 120px;
+        transition: all 0.2s ease;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .metric-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #6b7280;
+        font-weight: 700;
+    }
+
+    .metric-value {
+        font-size: 30px;
+        font-weight: 800;
+        color: #111827;
+        margin-top: 14px;
+        line-height: 1;
+    }
+
+    .metric-sub {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .metric-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .table-shell {
+        background: white;
+        border: 1px solid #dde3ea;
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow:
+            0 1px 2px rgba(15, 23, 42, 0.03),
+            0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .finance-table th {
+        background: #f8fafc;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 800;
+        padding: 18px 22px;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    .finance-table td {
+        padding: 20px 22px;
+        border-bottom: 1px solid #edf1f5;
+        font-size: 14px;
+        color: #111827;
+    }
+
+    .finance-table tbody tr:hover {
+        background: #fafcff;
+    }
+
+    .finance-input {
+        border: 1px solid #d4dbe4;
+        border-radius: 12px;
+        background: white;
+        padding: 10px 14px;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.15s ease;
+    }
+
+    .finance-input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+    }
+
+    .toolbar-btn {
+        height: 46px;
+        padding: 0 20px;
+        border-radius: 14px;
+        border: 1px solid #d6dbe2;
+        background: white;
+        font-size: 14px;
+        font-weight: 700;
+        color: #111827;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.15s ease;
+    }
+
+    .toolbar-btn:hover {
+        background: #f8fafc;
+    }
+
+    .toolbar-btn-primary {
+        background: #111827;
+        color: white;
+        border: none;
+    }
+
+    .toolbar-btn-primary:hover {
+        background: #000000;
+    }
+
+    .schedule-badge {
+        padding: 8px 14px;
+        border-radius: 12px;
+        background: #fee2e2;
+        color: #dc2626;
+        font-weight: 700;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 80px;
+    }
+
+    .summary-strip {
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+        padding: 20px 24px;
+    }
+
+    .pagination-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid #d1d5db;
+        background: white;
+        font-weight: 700;
+        transition: all 0.15s ease;
+    }
+
+    .pagination-btn:hover {
+        background: #f3f4f6;
+    }
+
+
     .finance-card {
         background: #ffffff;
         border: 1px solid #d9dde3;
@@ -151,11 +323,7 @@
                 Save Changes
             </button>
 
-            <div class="w-px h-7 bg-[#d1d5db] mx-1"></div>
-
-        
-
-        </div>
+           
 
     </header>
 
@@ -170,7 +338,7 @@
 
                 <div>
                     <div class="metric-label mb-3">
-                        Structural Track
+                        Loan ID
                     </div>
 
                     <div class="relative">
@@ -214,21 +382,19 @@
             </div>
 
             <!-- CARD -->
-            <div class="finance-card p-4 flex flex-col justify-between min-h-[130px]">
+            <div>
 
-                <div>
-                    <div class="metric-label">
-                        Total Lifecycle Return
-                    </div>
+                 <div class="metric-label">
+                    Total Return
+                     </div>
 
-                    <div class="metric-value mt-3 text-[32px]">
-                        {% if selected_loan and selected_loan.total_paid is not none %}
-                            ${{ '{:,.2f}'.format(selected_loan.total_paid | float) }}
-                        {% else %}
-                            $0.00
-                        {% endif %}
-                    </div>
-                </div>
+                <div class="metric-value">
+                                {% if selected_loan and selected_loan.total_paid is not none %}
+                                    ${{ '{:,.0f}'.format(selected_loan.total_paid | float) }}
+                                {% else %}
+                                    $0
+                                {% endif %}
+                            </div>
 
                 <div class="subtle-text mt-3">
                     Principal Original:
@@ -244,54 +410,64 @@
             </div>
 
             <!-- CARD -->
-            <div class="finance-card p-4 flex flex-col justify-between min-h-[130px]">
+            <div>
 
-                <div>
-                    <div class="metric-label">
-                        Cumulative Margin Cost
-                    </div>
+                 <div class="metric-label">
+                    Cumulative Margin Cost
+                     </div>
 
-                    <div class="metric-value mt-3 text-[#506680]">
-                        {% if selected_loan and selected_loan.total_interest is not none %}
-                            ${{ '{:,.2f}'.format(selected_loan.total_interest | float) }}
+                <div class="metric-value">
+                                {% if selected_loan and selected_loan.total_interest is not none %}
+                                    ${{ '{:,.0f}'.format(selected_loan.total_interest | float) }}
+                                {% else %}
+                                    $0
+                                {% endif %}
+                            </div>
+
+                <div class="subtle-text mt-3">
+                    Interest Rate:
+                    <span class="font-semibold text-[#111827]">
+                        {% if selected_loan %}
+                            {{ '{:,.2f}'.format(selected_loan.rate) }}%
                         {% else %}
                             $0.00
                         {% endif %}
-                    </div>
-                </div>
-
-                <div class="subtle-text mt-3">
-                    Interest Factor Matrix Active
+                    </span>
                 </div>
 
             </div>
 
             <!-- CARD -->
-            <div class="finance-card p-4 flex flex-col justify-between min-h-[130px]">
+            <div>
 
-                <div>
-                    <div class="metric-label">
-                        Tenure
-                    </div>
+                 <div class="metric-label">
+                    Tenure
+                     </div>
 
-                    <div class="metric-value mt-3 text-[28px]">
-                        {% if selected_loan %}
+                <div class="metric-value">
+                                 {% if selected_loan %}
                             {{ selected_loan.term_years }} Yrs
                         {% else %}
                             0 Years
                         {% endif %}
-                    </div>
-                </div>
+                            </div>
 
-                <div class="mt-3">
-                    {% if selected_loan and selected_loan.balloon_years and selected_loan.balloon_years|int > 0 %}
+                <div class="subtle-text mt-3">
+                    Ballon Year:
+                    <span class="font-semibold text-[#111827]">
+                        {% if selected_loan and selected_loan.balloon_years and selected_loan.balloon_years|int > 0 %}
                     <span class="inline-flex items-center gap-2 px-3 py-1 border border-[#ef4444] bg-[#fff1f1] text-[#991b1b] text-[11px] font-semibold rounded">
                         🎈 Balloon: Year {{ selected_loan.balloon_years }}
                     </span>
                     {% endif %}
+                    </span>
                 </div>
 
             </div>
+
+            
+
+            
 
         </div>
 
