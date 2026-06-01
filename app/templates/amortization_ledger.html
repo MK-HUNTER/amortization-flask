@@ -283,6 +283,101 @@ body {
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.08);
 }
 
+/* ==========================================
+   AMORTIZATION TABLE
+========================================== */
+
+.premium-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    font-size:14px;
+    background:#fff;
+}
+
+.premium-table thead th{
+    position:sticky;
+    top:0;
+    z-index:2;
+
+    background:#f8fafc;
+    color:#475569;
+
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+
+    padding:14px 18px;
+    border-bottom:2px solid #e5e7eb;
+
+    white-space:nowrap;
+}
+
+.premium-table tbody td{
+    padding:14px 18px;
+    border-bottom:1px solid #eef2f7;
+    background:#fff;
+}
+
+.premium-table tbody tr:nth-child(even) td{
+    background:#fafbfc;
+}
+
+.premium-table tbody tr:hover td{
+    background:#f8fafc;
+}
+
+.text-right{
+    text-align:right;
+}
+
+.muted{
+    color:#64748b;
+    font-weight:500;
+}
+
+.strong{
+    font-weight:600;
+    color:#111827;
+}
+
+/* Financial Colors */
+
+.principal{
+    color:#84a11c;
+    font-weight:700;
+}
+
+.interest{
+    color:#e58d2b;
+    font-weight:700;
+}
+
+.payment{
+    color:#111827;
+    font-weight:700;
+}
+
+.balance{
+    color:#92400e;
+    font-weight:700;
+}
+
+.currency{
+    font-variant-numeric:tabular-nums;
+}
+
+/* Card */
+
+.finance-card{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    box-shadow:
+        0 1px 2px rgba(15,23,42,.04),
+        0 10px 24px rgba(15,23,42,.05);
+}
 /* -------------------------
    Financial Colors
 --------------------------*/
@@ -377,23 +472,11 @@ body {
 
                         </select>
 
-                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-                            ▼
-                        </div>
+                        
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between mt-4 text-[12px] text-[#6b7280]">
-                    <span>ID HASH:</span>
-
-                    <span class="font-bold text-[#111827]">
-                        {% if selected_loan %}
-                            {{ selected_loan.loan_id }}
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </span>
-                </div>
+                
 
             </div>
 
