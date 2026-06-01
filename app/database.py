@@ -19,7 +19,8 @@ def init_db():
                 balloon_years INT NOT NULL,
                 start_date DATE NOT NULL,
                 total_interest NUMERIC(15, 2),
-                total_paid NUMERIC(15, 2)
+                total_paid NUMERIC(15, 2),
+                comments VARCHAR(256)
             );
         """)
         conn.execute("""
@@ -36,4 +37,19 @@ def init_db():
                 FOREIGN KEY (loan_id) REFERENCES tbl_amortization_detail(loan_id) ON DELETE CASCADE
             );
         """)
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS tbl_audit_log (
+                audit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                loan_id TEXT NOT NULL,
+                month_index INTEGER NOT NULL,
+                field_changed TEXT NOT NULL,
+                old_value REAL,
+                new_value REAL,
+                changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                comments TEXT
+            );
+        """)
         conn.commit()
+
+        

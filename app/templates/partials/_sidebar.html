@@ -1,55 +1,191 @@
-<aside id="sidebar-panel" class="w-[280px] bg-white border-r border-[#e2e8f0] flex flex-col flex-shrink-0 z-30">
-    <div class="p-6 border-b border-[#e2e8f0] flex items-start justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-gray-900 heading-token">Platform Ledger</h1>
-            <p class="text-xs text-gray-500 mt-1">Core Engine v2.4</p>
+<!-- ========================================= -->
+<!-- FINANCE APP SIDEBAR -->
+<!-- ========================================= -->
+
+<aside id="sidebar-panel"
+class="
+w-[220px]
+h-screen
+bg-[#f7f7f7]
+border-r border-[#dcdcdc]
+flex flex-col
+shrink-0
+">
+
+    <!-- LOGO -->
+    <div class="h-[58px] px-5 border-b border-[#e5e5e5] flex items-center">
+
+        <div class="flex items-center gap-3">
+
+            <!-- LOGO BOX -->
+            <div class="
+                w-8 h-8
+                bg-[#2b2f36]
+                rounded-[4px]
+                flex items-center justify-center
+                text-white
+                text-[13px]
+                font-bold
+            ">
+                A
+            </div>
+
+            <!-- TITLE -->
+            <div class="leading-tight">
+
+                <div class="text-[14px] font-semibold text-[#1f2937]">
+                    Amortize Pro
+                </div>
+
+            </div>
+
         </div>
-        <button onclick="toggleSidebar(false)" class="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-900 lg:block hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="flex-1 pt-3">
+
+        <!-- DASHBOARD -->
+        <a href="{{ url_for('main.portfolio_overview') }}"
+        class="
+            flex items-center gap-3
+            h-[42px]
+            px-5
+            text-[13px]
+            border-l-[3px]
+            transition-all duration-150
+
+            {% if request.endpoint == 'main.portfolio_overview' %}
+                bg-[#ececec]
+                border-[#d97706]
+                text-[#111827]
+                font-semibold
+            {% else %}
+                border-transparent
+                text-[#374151]
+                hover:bg-[#efefef]
+            {% endif %}
+        ">
+
+            <svg xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="w-4 h-4">
+
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3.75 3h7.5v7.5h-7.5zm9 0h7.5v7.5h-7.5zm-9 9h7.5v7.5h-7.5zm9 0h7.5v7.5h-7.5z" />
+
             </svg>
-        </button>
-    </div>
-    
-    <div class="p-4 border-b border-[#e2e8f0] space-y-1">
-        <span class="text-xs font-semibold text-gray-400 block mb-2 uppercase tracking-wider px-2">Console Interfaces</span>
-        <a href="{{ url_for('main.portfolio_overview') }}" class="w-full flex items-center space-x-3 px-3 py-2.5 text-sm font-medium rounded-lg {% if request.endpoint == 'main.portfolio_overview' %}bg-blue-50 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition-all">
-            <span class="text-base">🌐</span>
-            <span>Master Portfolio Editor</span>
+
+            <span>Overview</span>
+
         </a>
-        <a href="{{ url_for('main.loan_detail_view') }}" class="w-full flex items-center space-x-3 px-3 py-2.5 text-sm font-medium rounded-lg {% if request.endpoint == 'main.loan_detail_view' %}bg-blue-50 text-blue-700{% else %}text-gray-600 hover:bg-gray-100{% endif %} transition-all">
-            <span class="text-base">📊</span>
-            <span>Amortization Engine</span>
+
+        <!-- LOAN SCHEDULE -->
+        <a href="{{ url_for('main.loan_detail_view') }}"
+        class="
+            flex items-center gap-3
+            h-[42px]
+            px-5
+            text-[13px]
+            border-l-[3px]
+            transition-all duration-150
+
+            {% if request.endpoint == 'main.loan_detail_view' %}
+                bg-[#ececec]
+                border-[#d97706]
+                text-[#111827]
+                font-semibold
+            {% else %}
+                border-transparent
+                text-[#374151]
+                hover:bg-[#efefef]
+            {% endif %}
+        ">
+
+            <svg xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="w-4 h-4">
+
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M8.25 6.75h7.5m-7.5 4.5h7.5m-7.5 4.5h4.5M6 3.75h12A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75z" />
+
+            </svg>
+
+            <span>Loan Schedule</span>
+
         </a>
-    </div>
 
-    <div class="p-4 bg-[#f8fafc] border-b border-[#e2e8f0]">
-        <span class="text-xs font-semibold text-gray-500 block mb-2 uppercase tracking-wider">Excel Batch Management</span>
-        <form action="{{ url_for('main.handle_bulk_upload') }}" method="POST" enctype="multipart/form-data" class="space-y-2">
-            <input type="file" name="file" accept=".xlsx, .xlsm" required class="block w-full text-xs text-gray-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300"/>
-            <button type="submit" class="w-full text-center text-xs bg-gray-700 text-white rounded py-1.5 font-medium hover:bg-gray-800 transition-colors">⚡ Execute Excel Bulk Upload Parse</button>
-        </form>
-    </div>
+        <!-- ANALYTICS --> <!--
+        <a href="#"
+        class="
+            flex items-center gap-3
+            h-[42px]
+            px-5
+            text-[13px]
+            border-l-[3px]
+            border-transparent
+            text-[#374151]
+            hover:bg-[#efefef]
+            transition-all duration-150
+        ">
 
-    <div class="flex-1 overflow-y-auto p-4 space-y-3">
-        <span class="text-xs font-semibold text-gray-400 block uppercase tracking-wider px-1">Export Repository</span>
-        
-        <div class="grid grid-cols-1 gap-2">
-            <a href="{{ url_for('main.export_portfolio_excel') }}" class="w-full flex items-center justify-between p-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-all block">
-                <div class="flex items-center space-x-2.5">
-                    <span class="text-lg text-emerald-600">📄</span>
-                    <span class="text-xs font-semibold text-gray-800">Export Excel Sheet</span>
-                </div>
-                <span class="text-gray-400 text-xs">🡳</span>
-            </a>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="w-4 h-4">
 
-            <a href="{{ url_for('main.download_blank_template') }}" class="w-full flex items-center justify-between p-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 text-left transition-all block">
-                <div class="flex items-center space-x-2.5">
-                    <span class="text-lg text-purple-500">📋</span>
-                    <span class="text-xs font-semibold text-gray-800">Get Blank Template</span>
-                </div>
-                <span class="text-gray-400 text-xs">🡳</span>
-            </a>
-        </div>
-    </div>
-</aside>
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 3v18h18M7.5 15V9m4.5 6V6m4.5 9v-3" />
+
+            </svg>
+
+            <span>Analytics</span>
+
+        </a>
+    -->
+        <!-- SETTINGS --> <!--
+        <a href="#"
+        class="
+            flex items-center gap-3
+            h-[42px]
+            px-5
+            text-[13px]
+            border-l-[3px]
+            border-transparent
+            text-[#374151]
+            hover:bg-[#efefef]
+            transition-all duration-150
+        "> 
+
+            <svg xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+                stroke="currentColor"
+                class="w-4 h-4">
+
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M10.5 6h3m-7.5 6h12m-9 6h6" />
+
+            </svg>
+
+            <span>Settings</span>
+
+        </a> -->
+
+    </nav>
+
+</aside> 

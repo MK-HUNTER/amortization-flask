@@ -1,108 +1,616 @@
 {% extends "base.html" %}
 
-{% block title %}Master Portfolio Editor - Global Ledger{% endblock %}
+{% block title %}Amortization Portfolio{% endblock %}
 
 {% block content %}
-<form id="portfolio-form" action="{{ url_for('main.save_portfolio_changes') }}" method="POST" class="flex flex-col flex-1 overflow-hidden">
-    
-    <header class="bg-white border-b border-[#e2e8f0] px-8 py-4 flex items-center justify-between flex-shrink-0">
-        <div class="flex items-center space-x-2 text-xs text-gray-500 font-medium">
-            <span>PORTFOLIO</span>
-            <span>/</span>
-            <span class="text-gray-900 font-semibold">GLOBAL OVERVIEW</span>
+
+<form id="portfolio-form"
+      action="{{ url_for('main.save_portfolio_changes') }}"
+      method="POST"
+      class="flex flex-col flex-1 overflow-hidden bg-[#f3f4f6]">
+
+    <!-- HEADER -->
+    <header class="bg-white border-b border-[#dddddd] h-[58px] px-5 flex items-center justify-between shrink-0">
+
+        <!-- LEFT -->
+        <div>
+
+            <div class="flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] text-[#6b7280] font-semibold">
+
+                    <span class="text-black font-bold text-[#111827]">Master Ledger</span>
+
+            </div>
+
         </div>
-        <div class="flex items-center space-x-3">
-            <button type="button" onclick="window.location.reload();" class="px-4 py-2 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg bg-white hover:bg-gray-50 transition-colors shadow-sm">Discard Changes</button>
-            
-            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm">Save Changes</button>
-            
-            <button type="button" onclick="window.location.reload();" class="px-3 py-2 border border-gray-200 text-gray-600 text-xs font-medium rounded-lg bg-white hover:bg-gray-50 flex items-center space-x-1.5 shadow-sm">
-                <span>🔄</span> <span>Sync</span>
+
+        <!-- RIGHT -->
+        <div class="flex items-center gap-2">
+
+            <!-- DISCARD -->
+            <button type="button"
+                    onclick="window.location.reload();"
+                    class="
+                        h-[30px]
+                        px-4
+                        border
+                        border-[#d1d5db]
+                        bg-white
+                        text-[11px]
+                        font-semibold
+                        text-[#111827]
+                        hover:bg-[#f3f4f6]
+                        transition
+                    ">
+
+                Discard Changes
+
             </button>
-            <button type="button" class="p-2 border border-gray-200 text-gray-400 hover:text-gray-600 rounded-lg bg-white shadow-sm text-xs">🔔</button>
+
+            <!-- SAVE -->
+            <button type="submit"
+                    class="
+                        h-[30px]
+                        px-4
+                        bg-[#c2410c]
+                        hover:bg-[#9a3412]
+                        text-white
+                        text-[11px]
+                        font-semibold
+                        transition
+                    ">
+
+                Save Changes
+
+            </button>
+
         </div>
+
     </header>
 
-    <section class="flex-1 overflow-y-auto p-8 space-y-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-900 heading-token">Master Portfolio Editor</h2>
+    <!-- BODY -->
+    <section class="flex-1 overflow-y-auto p-5">
+
+        
+
+        <!-- METRIC CARDS -->
+        <div class="grid grid-cols-4 gap-4 mb-5">
+
+            <!-- CARD -->
+            <div class="bg-white border border-[#d9d9d9] p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <div class="text-[9px] uppercase tracking-[0.18em] font-bold text-[#6b7280]">
+                            Loans
+                        </div>
+
+                        <div class="mt-3 text-[13px] text-[#374151]">
+                            Total Loans
+                        </div>
+
+                        <div class="mt-1 text-[20px] font-bold text-[#111827]">
+                            {{ portfolio_loans|length }}
+                        </div>
+
+                    </div>
+
+                    <div class="w-8 h-8 rounded-md bg-[#eef2ff] flex items-center justify-center text-[#4f46e5]">
+                        👥
+                    </div>
+
+                </div>
+
             </div>
-            <button type="button" onclick="toggleModal(true)" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm flex items-center space-x-1.5">
-                <span>➕</span> <span>Add New Loan</span>
-            </button>
+
+            <!-- CARD -->
+            <div class="bg-white border border-[#d9d9d9] p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <div class="text-[9px] uppercase tracking-[0.18em] font-bold text-[#6b7280]">
+                            Principal
+                        </div>
+
+                        <div class="mt-3 text-[13px] text-[#374151]">
+                            Total Principal
+                        </div>
+
+                        <div class="mt-1 text-[20px] font-bold text-[#111827]">
+                            ${{ '{:,.0f}'.format(portfolio_loans | sum(attribute='principal')) }}
+                        </div>
+
+                    </div>
+
+                    <div class="w-8 h-8 rounded-md bg-[#eef2ff] flex items-center justify-center text-[#2563eb]">
+                        $
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CARD -->
+            <div class="bg-white border border-[#d9d9d9] p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <div class="text-[9px] uppercase tracking-[0.18em] font-bold text-[#6b7280]">
+                            Rate
+                        </div>
+
+                        <div class="mt-3 text-[13px] text-[#374151]">
+                            Average Rate
+                        </div>
+
+                        <div class="mt-1 text-[20px] font-bold text-[#dc2626]">
+                            3.25%
+                        </div>
+
+                    </div>
+
+                    <div class="w-8 h-8 rounded-md bg-[#fef2f2] flex items-center justify-center text-[#dc2626]">
+                        %
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CARD -->
+            <div class="bg-white border border-[#d9d9d9] p-4">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <div class="text-[9px] uppercase tracking-[0.18em] font-bold text-[#6b7280]">
+                            Active
+                        </div>
+
+                        <div class="mt-3 text-[13px] text-[#374151]">
+                            Active Portfolio
+                        </div>
+
+                        <div class="mt-1 text-[20px] font-bold text-[#4b5563]">
+                            Enterprise
+                        </div>
+
+                    </div>
+
+                    <div class="w-8 h-8 rounded-md bg-[#eef2ff] flex items-center justify-center text-[#2563eb]">
+                        🏢
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden flex flex-col shadow-sm">
-            <table class="w-full text-left border-collapse saas-table">
-                <thead>
-                    <tr class="text-xs font-semibold text-gray-700 uppercase border-b border-[#e2e8f0]">
-                        <th class="p-4 text-blue-600">Loan ID</th>
-                        <th class="p-4">Loan Name</th>
-                        <th class="p-4 text-right">Principal ($)</th>
-                        <th class="p-4 text-right">Rate (%)</th>
-                        <th class="p-4 text-center">Term (Yrs)</th>
-                        <th class="p-4 text-center">Balloon Period (Yrs)</th>
-                        <th class="p-4">Start Date</th>
-                        <th class="p-4 text-right text-gray-500">Accrued</th>
-                        <th class="p-4 text-right">Paid</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 text-sm text-gray-600 font-medium">
-                    {% if not portfolio_loans %}
-                    <tr>
-                        <td colspan="9" class="p-8 text-center text-sm text-gray-400 italic bg-white">
-                            No ledger asset paths mapped inside core repository database.
-                        </td>
-                    </tr>
-                    {% endif %}
-                    {% for item in portfolio_loans %}
-                    <tr class="hover:bg-blue-50/40 transition-colors {% if loop.index % 2 == 0 %}bg-[#f8fafc]{% endif %}">
-                        <input type="hidden" name="loan_id[]" value="{{ item.loan_id }}">
-                        
-                        <td class="p-4 font-mono text-xs font-bold text-blue-600">
-                            <a href="{{ url_for('main.loan_detail_view', loan_id=item.loan_id) }}" class="hover:underline">#{{ item.loan_id }}</a>
-                        </td>
-                        
-                        <td class="p-4 text-gray-900 font-semibold max-w-[200px] truncate">
-                            {{ item.loan_name }}
-                        </td>
-                        
-                        <td class="p-2 text-right">
-                            <input type="number" step="0.01" name="principal[]" value="{{ item.principal }}" class="w-full text-sm text-right font-medium text-gray-800 bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded tabular-data-flag focus:outline-none">
-                        </td>
-                        
-                        <td class="p-2 text-right">
-                            <input type="number" step="0.01" name="rate[]" value="{{ item.rate }}" class="w-full text-sm text-right font-medium text-gray-800 bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded tabular-data-flag focus:outline-none">
-                        </td>
-                        
-                        <td class="p-2 text-center">
-                            <input type="number" name="term_years[]" value="{{ item.term_years }}" class="w-16 text-sm text-center font-mono bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded focus:outline-none mx-auto">
-                        </td>
-                        
-                        <td class="p-2 text-center">
-                            <input type="number" name="balloon_years[]" value="{{ item.balloon_years or 0 }}" class="w-16 text-sm text-center font-mono bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded focus:outline-none mx-auto">
-                        </td>
+        <!-- ACTION BAR -->
+        <div class="flex items-center justify-between mb-3">
 
-                        <td class="p-2">
-                            <input type="date" name="start_date[]" value="{{ item.start_date }}" class="text-xs font-mono text-gray-600 bg-transparent border border-transparent hover:border-gray-300 focus:border-blue-500 focus:bg-white px-2 py-1.5 rounded focus:outline-none w-full">
-                        </td>
-                        
-                        <td class="p-4 text-right tabular-data-flag text-gray-500 font-normal">
-                            ${{ '{:,.2f}'.format(item.accrued) }}
-                        </td>
-                        <td class="p-4 text-right tabular-data-flag font-bold text-gray-900">
-                            ${{ '{:,.2f}'.format(item.paid) }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            
-            <footer class="bg-[#f8fafc] border-t border-[#e2e8f0] px-4 py-3 flex items-center justify-between text-xs text-gray-500 font-medium">
-                <div>VIEWING {{ portfolio_loans|length }} Active Financial Asset Mappings</div>
-            </footer>
+            <!-- SEARCH -->
+            <div class="relative w-[310px]">
+
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
+
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M21 21l-4.35-4.35m1.6-5.4a7 7 0 11-14 0 7 7 0 0114 0z"/>
+
+                </svg>
+
+                <input type="text"
+                    placeholder="Search loans..."
+                    class="
+                        w-full
+                        h-[34px]
+                        pl-9
+                        pr-4
+                        border
+                        border-[#d1d5db]
+                        bg-white
+                        text-[12px]
+                        focus:outline-none
+                    ">
+
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="flex items-center gap-2">
+
+                <!-- DOWNLOAD -->
+                            <!-- DOWNLOAD -->
+                <a href="{{ url_for('main.export_portfolio_excel') }}"
+                class="
+                        h-[34px]
+                        px-4
+                        border
+                        border-[#d1d5db]
+                        bg-white
+                        hover:bg-[#f3f4f6]
+                        text-[12px]
+                        font-semibold
+                        text-[#111827]
+                        flex items-center gap-2
+                ">
+
+                    ↓ Download
+
+                </a>
+
+                <!-- UPLOAD -->
+<button type="button"
+        onclick="toggleUploadModal(true)"
+        class="
+            h-[34px]
+            px-4
+            border
+            border-[#d1d5db]
+            bg-white
+            hover:bg-[#f3f4f6]
+            text-[12px]
+            font-semibold
+            text-[#111827]
+            flex items-center gap-2
+        ">
+
+    ↑ Upload
+
+</button>
+
+                <!-- ADD -->
+                <button type="button"
+                    onclick="toggleModal(true)"
+                    class="
+                        h-[34px]
+                        px-5
+                        bg-[#2f3640]
+                        hover:bg-black
+                        text-white
+                        text-[12px]
+                        font-semibold
+                        flex items-center gap-2
+                    ">
+
+                    <span>+</span>
+                    <span>Add Loan</span>
+
+                </button>
+
+            </div>
+
         </div>
+
+        <!-- TABLE -->
+        <div class="bg-white border border-[#d9d9d9] overflow-hidden">
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full border-collapse">
+
+                    <thead class="bg-[#f7f7f7] border-b border-[#d9d9d9]">
+
+                        <tr class="text-[10px] uppercase tracking-[0.15em] text-[#6b7280] font-bold">
+
+                            <th class="px-4 py-3 text-left">Loan ID</th>
+                            <th class="px-4 py-3 text-left">Loan Name</th>
+                            <th class="px-4 py-3 text-right">Principal</th>
+                            <th class="px-4 py-3 text-center">Rate %</th>
+                            <th class="px-4 py-3 text-center">Tenure (Yrs)</th>
+                            <th class="px-4 py-3 text-center">Balloon (Yrs)</th>
+                            <th class="px-4 py-3 text-center">Start Date</th>
+                            <th class="px-4 py-3 text-right">Total Payment</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in portfolio_loans %}
+
+                        <tr class="border-b border-[#ececec] hover:bg-[#fafafa]">
+
+                            <input type="hidden"
+                                   name="loan_id[]"
+                                   value="{{ item.loan_id }}">
+
+                            <!-- LOAN -->
+                            <td class="px-4 py-4 text-[13px] font-semibold text-[#2563eb]">
+
+                                <a href="{{ url_for('main.loan_detail_view', loan_id=item.loan_id) }}">
+                                    #{{ item.loan_id }}
+                                </a>
+
+                            </td>
+
+                            <!-- NAME -->
+                            <td class="px-4 py-4">
+
+                                <input type="text"
+                                    name="loan_name[]"
+                                    value="{{ item.loan_name }}"
+                                    class="
+                                        w-full
+                                        bg-transparent
+                                        text-[13px]
+                                        font-semibold
+                                        text-[#111827]
+                                        outline-none
+                                    ">
+
+                            </td>
+
+                            <!-- PRINCIPAL -->
+                            <td class="px-4 py-4">
+
+                                <input type="number"
+                                    step="0.01"
+                                    name="principal[]"
+                                    value="{{ item.principal }}"
+                                    class="
+                                        w-full
+                                        text-right
+                                        bg-transparent
+                                        text-[13px]
+                                        outline-none
+                                    ">
+
+                            </td>
+
+                            <!-- RATE -->
+                            <td class="px-4 py-4 text-center">
+
+                                <input type="number"
+                                    step="0.01"
+                                    name="rate[]"
+                                    value="{{ item.rate }}"
+                                    class="
+                                        w-[55px]
+                                        text-center
+                                        bg-[#fee2e2]
+                                        text-[#dc2626]
+                                        text-[11px]
+                                        font-bold
+                                        py-1
+                                        outline-none
+                                    ">
+
+                            </td>
+
+                            <!-- TENURE -->
+                            <td class="px-4 py-4 text-center">
+
+                                <input type="number"
+                                    name="term_years[]"
+                                    value="{{ item.term_years }}"
+                                    class="
+                                        w-[50px]
+                                        text-center
+                                        bg-transparent
+                                        text-[13px]
+                                        outline-none
+                                    ">
+
+                            </td>
+
+                            <!-- BALLOON -->
+                            <td class="px-4 py-4 text-center">
+
+                                <input type="number"
+                                    name="balloon_years[]"
+                                    value="{{ item.balloon_years or 0 }}"
+                                    class="
+                                        w-[50px]
+                                        text-center
+                                        bg-transparent
+                                        text-[13px]
+                                        outline-none
+                                    ">
+
+                            </td>
+
+                            <!-- DATE -->
+                            <td class="px-4 py-4 text-center">
+
+                                <input type="date"
+                                    name="start_date[]"
+                                    value="{{ item.start_date }}"
+                                    class="
+                                        bg-transparent
+                                        text-[12px]
+                                        outline-none
+                                    ">
+
+                            </td>
+
+                            <!-- PAID -->
+                            <td class="px-4 py-4 text-right text-[14px] font-bold text-[#111827]">
+
+                                ${{ '{:,.2f}'.format(item.paid) }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="h-[44px] px-4 border-t border-[#d9d9d9] flex items-center justify-between bg-white">
+
+                <div class="text-[12px] text-[#4b5563]">
+                    Showing 1 to {{ portfolio_loans|length }} of {{ portfolio_loans|length }} loans
+                </div>
+
+                <div class="flex items-center gap-1">
+
+                    <button type="button"
+                        class="w-7 h-7 border border-[#d1d5db] bg-white text-[#6b7280] text-[12px]">
+                        ‹
+                    </button>
+
+                    <button type="button"
+                        class="w-7 h-7 bg-[#c2410c] text-white text-[12px] font-semibold">
+                        1
+                    </button>
+
+                    <button type="button"
+                        class="w-7 h-7 border border-[#d1d5db] bg-white text-[#6b7280] text-[12px]">
+                        ›
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </section>
+
 </form>
+<!-- UPLOAD MODAL -->
+<div id="uploadModal"
+     class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+
+    <div class="bg-white w-[420px] rounded-lg shadow-xl p-6">
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-5">
+
+            <div>
+                <h2 class="text-[18px] font-bold text-[#111827]">
+                    Upload Portfolio File
+                </h2>
+
+                <p class="text-[12px] text-[#6b7280] mt-1">
+                    Upload Excel file to update loan portfolio.
+                </p>
+            </div>
+
+            <button type="button"
+                    onclick="toggleUploadModal(false)"
+                    class="text-[#6b7280] hover:text-black text-[20px]">
+                ×
+            </button>
+
+        </div>
+
+        <!-- FORM -->
+        <form action="{{ url_for('main.handle_bulk_upload') }}"
+              method="POST"
+              enctype="multipart/form-data">
+
+            <!-- FILE INPUT -->
+            <label class="
+                    border-2
+                    border-dashed
+                    border-[#d1d5db]
+                    rounded-lg
+                    h-[140px]
+                    flex
+                    flex-col
+                    items-center
+                    justify-center
+                    cursor-pointer
+                    hover:bg-[#f9fafb]
+                    transition
+                ">
+
+                <input type="file"
+                       name="file"
+                       accept=".xlsx,.xls"
+                       required
+                       class="hidden">
+
+                <div class="text-[40px] text-[#9ca3af]">
+                    ↑
+                </div>
+
+                <div class="mt-2 text-[13px] font-semibold text-[#111827]">
+                    Click to select Excel file
+                </div>
+
+                <div class="text-[11px] text-[#6b7280] mt-1">
+                    Supported: .xlsx / .xls
+                </div>
+
+            </label>
+
+            <!-- ACTIONS -->
+            <div class="flex justify-end gap-2 mt-5">
+
+                <button type="button"
+                        onclick="toggleUploadModal(false)"
+                        class="
+                            h-[34px]
+                            px-4
+                            border
+                            border-[#d1d5db]
+                            bg-white
+                            text-[12px]
+                            font-semibold
+                            hover:bg-[#f3f4f6]
+                        ">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="
+                            h-[34px]
+                            px-5
+                            bg-[#2563eb]
+                            hover:bg-[#1d4ed8]
+                            text-white
+                            text-[12px]
+                            font-semibold
+                        ">
+                    Upload File
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function toggleUploadModal(show) {
+
+    const modal = document.getElementById('uploadModal');
+
+    if (show) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+}
+
+</script>
+
 {% endblock %}

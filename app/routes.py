@@ -362,3 +362,72 @@ def handle_create_loan():
         return redirect(url_for('main.portfolio_overview'))
     except Exception as e:
         return f"Operational Processing Failure: {str(e)}", 500
+    
+@main.route('/portfolio/engine/save-overrides', methods=['POST'])
+def save_engine_overrides():
+    try:
+        loan_id = request.form.get('loan_id')
+        month_indexes = request.form.getlist('month_index[]')
+        submitted_balances = request.form.getlist('closing_bal[]')
+        
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            loan = cursor.execute("SELECT rate FROM tbl_amortization_detail WHERE loan_id = ?", (loan_id,)).fetchone()
+            monthly_rate = (float(loan['rate']) / 100) / 12
+            
+            for idx in range(len(month_indexes)):
+                m_idx = int(month_indexes[idx])
+                new_bal = float(submitted_balances[idx])
+                
+                # Fetch current DB state for comparison
+                current = cursor.execute("SELECT closing_bal FROM tbl_amortization_calc WHERE loan_id=? AND month_index=?", 
+                                         (loan_id, m_idx)).fetchone()
+                
+                if current and round(float(current['closing_bal']), 2) != round(new_bal, 2):
+                    
+                    # 1. LOG AUDIT: Only for the record the user explicitly changed
+                    cursor.execute("""
+                        INSERT INTO tbl_audit_log (loan_id, month_index, field_changed, old_value, new_value, comments)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    """, (loan_id, m_idx, 'closing_bal', current['closing_bal'], new_bal, "Manual User Override"))
+                    
+                    # 2. UPDATE override point
+                    cursor.execute("UPDATE tbl_amortization_calc SET closing_bal = ? WHERE loan_id=? AND month_index=?", 
+                                   (new_bal, loan_id, m_idx))
+                    
+                    # 3. CASCADE RECALCULATION: No audit logs generated inside this loop
+                    future_rows = cursor.execute(
+                        "SELECT * FROM tbl_amortization_calc WHERE loan_id=? AND month_index > ? ORDER BY month_index ASC", 
+                        (loan_id, m_idx)
+                    ).fetchall()
+                    
+                    prev_balance = new_bal 
+                    for f_row in future_rows:
+                        row_dict = dict(f_row)
+                        current_opening = prev_balance
+                        new_interest = current_opening * monthly_rate
+                        payment_amount = float(row_dict.get('payment_amount', 0.0))
+                        
+                        raw_principal = payment_amount - new_interest
+                        if raw_principal > current_opening:
+                            new_principal = current_opening
+                            new_closing = 0.0
+                        else:
+                            new_principal = raw_principal
+                            new_closing = current_opening - new_principal
+                        
+                        # System-driven update (NO AUDIT LOG HERE)
+                        cursor.execute("""
+                            UPDATE tbl_amortization_calc 
+                            SET opening_bal = ?, interest_paid = ?, principal_paid = ?, closing_bal = ? 
+                            WHERE loan_id=? AND month_index=?
+                        """, (current_opening, new_interest, new_principal, new_closing, loan_id, row_dict['month_index']))
+                        
+                        prev_balance = new_closing 
+            
+            conn.commit()
+        return redirect(url_for('main.loan_detail_view', loan_id=loan_id))
+    except Exception as e:
+        return f"Error: {str(e)}", 500
+    
+    
